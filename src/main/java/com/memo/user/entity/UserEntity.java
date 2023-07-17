@@ -1,4 +1,4 @@
-package com.memo.user.entiey;
+package com.memo.user.entity;
 
 import java.time.ZonedDateTime;
 
@@ -17,16 +17,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="user")
+@Table(name = "user")
 @Getter
 @Entity
 public class UserEntity {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -35,7 +33,9 @@ public class UserEntity {
 	private String loginId;
 	
 	private String password;
+	
 	private String name;
+	
 	private String email;
 	
 	@UpdateTimestamp
@@ -43,7 +43,6 @@ public class UserEntity {
 	private ZonedDateTime createdAt;
 	
 	@UpdateTimestamp
-	@Column(name = "updatedAt", updatable = false)
+	@Column(name = "updatedAt")
 	private ZonedDateTime updatedAt;
-
 }
