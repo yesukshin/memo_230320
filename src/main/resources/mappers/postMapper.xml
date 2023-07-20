@@ -9,6 +9,15 @@
 	<select resultType="com.memo.post.domain.Post"
 		id="selectPostListByUserId" parameterType="int">SELECT
 		`id`,`userId`,`subject`,`content`,`imagePath`,`createdAt`,`updatedAt`FROM
-		`post`WHERE `userId` = #{userId} order by id desc </select>
+		`post`WHERE `userId` = #{userId} order by id desc
+	</select>
+	
+	<insert id="insertPost" parameterType="map">
+	    insert into `post`
+		(`userId`,`subject`,`content`,`imagePath`,`createdAt`,`updatedAt`)
+		values
+		(#{userId},#{subject},#{content},#{file},NOW(),NOW()) 
+		
+	</insert>
 
 </mapper>
