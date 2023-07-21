@@ -1,10 +1,11 @@
 package com.memo.post.domain;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import lombok.Data;
+import lombok.ToString;
 
+@ToString
 @Data //lombok에서 getter, setter를 만들어 준다
 public class Post {
 	
