@@ -26,5 +26,17 @@
 		select `id`,`userId`,`subject`,`content`,`imagePath`,`createdAt`,`updatedAt`
 		from `post` where `userId` = #{userId} and `id` = #{postId}
 	</select>
-
+    
+    <update id = "updatePostByPostIdAndUserId" parameterType="map">
+    
+       UPDATE  `post`  
+          SET  `subject` = #{subject}
+			  , `content` = #{content}
+			   <!-- imagePath가 있을때에만 update -->
+			   <if test="imagePath != null" >
+			  , `imagePath` = #{imagePath}
+			   </if>			   
+			  , `updatedAt` = NOW()
+		WHERE id = #{postId} AND userId = #{userId}
+    </update>
 </mapper>
