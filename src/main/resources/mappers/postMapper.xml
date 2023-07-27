@@ -39,4 +39,9 @@
 			  , `updatedAt` = NOW()
 		WHERE id = #{postId} AND userId = #{userId}
     </update>
+    <delete id = "deletePostByPostIdAndUserId"  parameterType="map">
+    
+    delete from `post' where id = #{postId} AND userId = #{userId};
+    
+    </delete>
 </mapper>

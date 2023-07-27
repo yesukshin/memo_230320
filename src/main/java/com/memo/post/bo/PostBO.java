@@ -60,7 +60,7 @@ public class PostBO {
     	
     	// 글 수정하기 전에 수정할 대상 가져오기, 이후 이미지 제거위해서도 파일 패스 필요함
     	Post post = postMapper.selectPostByPostIdAndUserId(postId, userId);
-    	logger.warn("[글 수정] post is null postId:{},userID:{}", postId, userId);
+    	//logger.warn("[글 수정] post is null postId:{},userID:{}", postId, userId);
     	if (post == null) {
     		logger.warn("[글 수정] post is null postId:{},userID:{}", postId, userId);
     		return;
@@ -87,4 +87,26 @@ public class PostBO {
     	// 글 업데이트
     	postMapper.updatePostByPostIdAndUserId(postId, userId, subject, content, imagePath);
     }
+    
+    public void deletePostByPostIdAndUserId(int postId, int userId){
+		
+    	// 기존글을 가져와서 이미지 삭제한다
+    	Post post = postMapper.selectPostByPostIdAndUserId(postId, userId);
+    	
+    	if (post == null) {
+    		logger.error("[글 삭제] post is null postId:{},userID:{}", postId, userId);
+    		return;
+    	}
+    	//post안에 이미지path가 있으면 삭제
+    	String imagePath = post.getImagePath();
+    	
+    	if (imagePath != null) {
+    		// 이미지 제거
+            // fileManager에게 요청
+			fileManager.deleteFile(imagePath);
+    	}
+    	
+		postMapper.deletePostByPostIdAndUserId(postId,userId);
+	}
+    
 }
