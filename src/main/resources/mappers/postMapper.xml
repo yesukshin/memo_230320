@@ -6,10 +6,27 @@
 
 	<select resultType="map" id="selectPostList">select * from `post` </select>
 
-	<select resultType="com.memo.post.domain.Post"
-		id="selectPostListByUserId" parameterType="int">SELECT
-		`id`,`userId`,`subject`,`content`,`imagePath`,`createdAt`,`updatedAt`FROM
-		`post`WHERE `userId` = #{userId} order by id desc
+	<select resultType="com.memo.post.domain.Post" id="selectPostListByUserId" parameterType="int">
+		SELECT
+		   `id`,`userId`,`subject`,`content`,`imagePath`,`createdAt`,`updatedAt`
+		 FROM `post`
+		WHERE `userId` = #{userId}
+			<if test = "direction == null">
+				order by id DESC		
+			</if> 
+			<if test = "direction == 'next'">
+				<![CDATA[
+				AND `Id` < #{standardId}				
+				]]>
+				order by id DESC
+			</if> 
+			<if test = "direction == 'prev'">
+				<![CDATA[
+				AND `Id` > #{standardId}				
+				]]>
+			</if> 
+			LIMIT ${limit} <!-- 숫자값일때는 $, #은 작은따옴표임 -->
+		
 	</select>
 
 	<insert id="insertPost" parameterType="map">
@@ -41,7 +58,12 @@
     </update>
     <delete id = "deletePostByPostIdAndUserId"  parameterType="map">
     
-    delete from `post' where id = #{postId} AND userId = #{userId};
+    delete from `post` where id = #{postId} AND userId = #{userId}
     
     </delete>
+    
+    <select id = "selectPostIdByUserIdAndSort" parameterType="map" resultType="int">
+    	select `Id` from `post` where userId=#{userId} order by `id` ${sort} limit 1
+    </select>
+    
 </mapper>

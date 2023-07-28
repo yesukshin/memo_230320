@@ -1,5 +1,6 @@
 package com.memo.post.bo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class PostBO {
 	// dev(개발) = > debug이후만 로그 다본다
 	// stage계 = > info이후만 본다
 	// real계 = > warning이후만 본다 등
-			
+    private static final int POST_MAX_SIZE = 3;			
 			
 	@Autowired 
 	private PostMapper postMapper; //Mapper라고 붙어 있으면 mybatis
@@ -32,9 +33,33 @@ public class PostBO {
 	// input : userId
 	// ouput : List<Post>
 	// 널이 들어올수 없으므로 int : int userId
-	public List<Post> getPostListByUserId(int userId){
+	public List<Post> getPostListByUserId(int userId, Integer prevId, Integer nextId){
 		
-		return postMapper.selectPostListByUserId(userId);
+		// 14 13 12   11 10 9  8 7 6   5
+		// 만약 876페이지에 있을때
+		// 1) 다음일때 6보다 작은 3개 desc정렬
+		// 2) 이전일때 8번보다 큰것중 asc정렬로 가져와서 BO에서 list reverse시킴-> 11,10,9
+		// 3) 첫페이지 일때 (이전, 다음 없음) desc 3개
+		String direction = null ;// 방향
+		Integer standardId = null;//기준 postId
+		
+		if (prevId != null) {
+			//이전
+			direction = "prev";
+			standardId = prevId;
+			// get list
+			List<Post> postList = postMapper.selectPostListByUserId(userId,direction,standardId,POST_MAX_SIZE);
+			// reverse 5,6,7->7,6,5
+			Collections.reverse(postList);// 리벌스하고 postList에 저장까지 해준다
+			// return
+			return postList;
+		} else if (nextId != null) {
+			//다음
+			direction = "next";
+			standardId = nextId;
+		} 
+		
+		return postMapper.selectPostListByUserId(userId,direction,standardId,POST_MAX_SIZE);
 	}
 	
 	public int addPost(int userId, String userLoginId, String subject, String content, MultipartFile file) {
@@ -109,4 +134,23 @@ public class PostBO {
 		postMapper.deletePostByPostIdAndUserId(postId,userId);
 	}
     
+    // 이전방향의 끝인지 확인
+    // input : prevId, userId
+    // output : boolean
+    public boolean isPrevLastPage(int prevId, int UserId) {
+    	
+    	 int postId = postMapper.selectPostIdByUserIdAndSort(UserId, "DESC");
+    	 
+    	 return prevId == postId; // 같으면 끝, 아니면 끝아님
+    }
+    
+    // 다음 방향의 끝인지 확인
+    // input : nextId, userId
+    // output : boolean
+    public boolean isNextLastPage(int prevId, int userId) {
+    	
+    	// postMapper.selectPostIdByUserIdAndSort(UserId, "ASC");
+    	 
+    	 return prevId == postMapper.selectPostIdByUserIdAndSort(userId, "ASC"); // 같으면 끝, 아니면 끝아님
+    }
 }

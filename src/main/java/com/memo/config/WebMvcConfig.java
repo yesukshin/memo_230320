@@ -1,13 +1,28 @@
 package com.memo.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.memo.common.FileManagerService;
+import com.memo.intercepter.PermissionIntercepter;
 
 @Configuration//설정을 위한 spring bean
 public class WebMvcConfig implements WebMvcConfigurer{
+	
+	@Autowired
+	private PermissionIntercepter intercepter;
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry
+		.addInterceptor(intercepter)
+		.addPathPatterns("/**")
+		.excludePathPatterns("/static/**", "/error", "/favicon.ico", "/user/sign_out")
+		;
+	}
 	
 	// http://localhost:88/images/shing27_1689841052620/capybara-1732020_960_720.jpg
 	// FILE_UPLOAD_PATH = "D:\\sys\\6_spring_project\\memo\\workspace\\images/";	
